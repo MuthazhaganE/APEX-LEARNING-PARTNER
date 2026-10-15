@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AIT - Student Portal</title>
+<link rel="stylesheet" href="css/style.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="js/data.js"></script>
+</head>
+<body>
+<div class="dashboard">
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-logo">🎓</div>
+    <div><div class="sidebar-title">AIT</div><div class="sidebar-subtitle">Campus Portal</div></div>
+  </div>
+  <div class="sidebar-user" id="sidebar-user">
+    <div class="sidebar-avatar" id="sb-avatar">👤</div>
+    <div><div class="sidebar-user-name" id="sb-name">Student</div><div class="sidebar-user-role" id="sb-roll">Loading...</div></div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">Main</div>
+    <div class="nav-item active" onclick="showSection('home')" id="nav-home"><span class="nav-icon">🏠</span>Home</div>
+    <div class="nav-item" onclick="showSection('profile')" id="nav-profile"><span class="nav-icon">👤</span>Profile</div>
+    <div class="nav-section-label">Academics</div>
+    <div class="nav-item" onclick="showSection('attendance')" id="nav-attendance"><span class="nav-icon">📊</span>Attendance</div>
+    <div class="nav-item" onclick="showSection('marks')" id="nav-marks"><span class="nav-icon">📝</span>Exam Records</div>
+    <div class="nav-section-label">Finance</div>
+    <div class="nav-item" onclick="showSection('fees')" id="nav-fees"><span class="nav-icon">💳</span>Fees & Payments</div>
+    <div class="nav-section-label">More</div>
+    <div class="nav-item" onclick="showSection('calendar')" id="nav-calendar"><span class="nav-icon">📅</span>Calendar</div>
+    <div class="nav-item" onclick="showSection('placements')" id="nav-placements"><span class="nav-icon">💼</span>Placements</div>
+    <div class="nav-item" onclick="showSection('videos')" id="nav-videos"><span class="nav-icon">🎬</span>Video Lectures</div>
+  </nav>
+  <div class="sidebar-footer">
+    <button class="btn-logout" onclick="logout()">🚪 Sign Out</button>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <header class="topbar">
+    <div class="topbar-title" id="topbar-title">Home</div>
+    <div class="search-bar"><span class="icon">🔍</span><input type="text" placeholder="Search anything..."></div>
+    <div class="topbar-actions">
+      <button class="topbar-btn" title="Notifications"><span>🔔</span><span class="notif-dot"></span></button>
+      <div class="topbar-profile">
+        <div class="topbar-avatar" id="tb-avatar">👤</div>
+        <span class="topbar-name" id="tb-name">Student</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="page-content">
+
+    <!-- HOME -->
+    <section class="page-section active" id="sec-home">
+      <div class="section-header">
+        <div><div class="section-title">Welcome Back! 👋</div><div class="section-subtitle" id="home-subtitle">Loading...</div></div>
+      </div>
+      <div class="stats-grid" id="home-stats"></div>
+      <div class="sidebar-layout">
+        <div>
+          <div class="card"><div class="card-header"><div class="card-title">📢 Announcements</div><span class="badge blue">Live</span></div><div id="feed-container"></div></div>
+        </div>
+        <div>
+          <div class="card" id="quick-att-card"><div class="card-title" style="margin-bottom:16px">📊 Quick Attendance</div><div id="quick-att"></div></div>
+          <div class="card" style="margin-top:0"><div class="card-title" style="margin-bottom:14px">📅 Upcoming</div>
+            <div style="display:flex;flex-direction:column;gap:10px" id="upcoming-events"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROFILE -->
+    <section class="page-section" id="sec-profile">
+      <div class="section-header"><div class="section-title">My Profile</div></div>
+      <div class="card" style="padding:0;overflow:hidden">
+        <div class="profile-cover"></div>
+        <div class="profile-info">
+          <div class="profile-pic" id="prof-pic">👤</div>
+          <div style="padding-bottom:8px"><div class="profile-name" id="prof-name"></div><div class="profile-detail" id="prof-dept"></div><div style="margin-top:6px" id="prof-badges"></div></div>
+        </div>
+        <div class="profile-grid" id="profile-grid"></div>
+      </div>
+    </section>
+
+    <!-- ATTENDANCE -->
+    <section class="page-section" id="sec-attendance">
+      <div class="section-header">
+        <div><div class="section-title">Attendance Records</div><div class="section-subtitle">Academic Year 2025-26 | Even Semester</div></div>
+        <span class="badge blue" id="att-term-badge">Loading...</span>
+      </div>
+      <div class="card">
+        <div class="attendance-overview">
+          <div class="chart-wrap"><canvas id="att-chart"></canvas><div class="chart-center-text"><div class="pct" id="att-pct">--%</div><div class="lbl">Attendance</div></div></div>
+          <div class="attendance-stats">
+            <div class="att-stat-row"><span class="att-stat-label"><span class="att-dot present"></span>Total Sessions</span><span class="att-stat-val" id="att-total">-</span></div>
+            <div class="att-stat-row"><span class="att-stat-label"><span class="att-dot present"></span>Present</span><span class="att-stat-val" id="att-present" style="color:#1565C0">-</span></div>
+            <div class="att-stat-row"><span class="att-stat-label"><span class="att-dot absent"></span>Absent</span><span class="att-stat-val" id="att-absent" style="color:#C62828">-</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title" style="margin-bottom:16px">Subject-wise Attendance</div>
+        <div class="table-wrap"><table><thead><tr><th>Course Name</th><th>Attended</th><th>Scheduled</th><th>Percentage</th><th>Status</th></tr></thead><tbody id="att-table"></tbody></table></div>
+      </div>
+    </section>
+
+    <!-- MARKS -->
+    <section class="page-section" id="sec-marks">
+      <div class="section-header">
+        <div><div class="section-title">Exam Records</div><div class="section-subtitle">Internal & Semester Marks</div></div>
+      </div>
+      <div class="stats-grid" id="marks-stats"></div>
+      <div class="card">
+        <div class="card-title" style="margin-bottom:16px">Subject-wise Marks</div>
+        <div class="table-wrap"><table><thead><tr><th>Subject</th><th>IA-I (50)</th><th>IA-II (50)</th><th>IA-III (50)</th><th>Assignment (10)</th><th>Semester (100)</th><th>Grade</th><th>Status</th></tr></thead><tbody id="marks-table"></tbody></table></div>
+      </div>
+    </section>
+
+    <!-- FEES -->
+    <section class="page-section" id="sec-fees">
+      <div class="section-header"><div class="section-title">Fees & Payments</div><div class="section-subtitle">Academic Year 2025-26</div></div>
+      <div class="fee-summary" id="fee-summary"></div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">Fee Breakdown</div><button class="btn btn-primary btn-sm" onclick="showToast('Payment gateway integration required', 'info')">💳 Pay Now</button></div>
+        <div class="table-wrap"><table><thead><tr><th>Fee Type</th><th>Amount</th><th>Status</th><th>Date Paid</th><th>Receipt</th></tr></thead><tbody id="fees-table"></tbody></table></div>
+      </div>
+    </section>
+
+    <!-- CALENDAR -->
+    <section class="page-section" id="sec-calendar">
+      <div class="section-header"><div class="section-title">Academic Calendar</div></div>
+      <div class="two-col">
+        <div class="card"><div class="card-title" style="margin-bottom:16px">May 2026</div><div id="calendar-widget"></div></div>
+        <div class="card"><div class="card-title" style="margin-bottom:16px">Upcoming Events</div><div id="cal-events"></div></div>
+      </div>
+    </section>
+
+    <!-- PLACEMENTS -->
+    <section class="page-section" id="sec-placements">
+      <div class="section-header"><div class="section-title">Placements</div></div>
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-icon blue">💼</div><div><div class="stat-value">48</div><div class="stat-label">Companies Visited</div></div></div>
+        <div class="stat-card"><div class="stat-icon green">✅</div><div><div class="stat-value">312</div><div class="stat-label">Students Placed</div></div></div>
+        <div class="stat-card"><div class="stat-icon orange">💰</div><div><div class="stat-value">8.4L</div><div class="stat-label">Avg Package</div></div></div>
+        <div class="stat-card"><div class="stat-icon purple">🏆</div><div><div class="stat-value">24L</div><div class="stat-label">Highest Package</div></div></div>
+      </div>
+      <div class="card">
+        <div class="card-title" style="margin-bottom:16px">Upcoming Drives</div>
+        <div class="table-wrap"><table><thead><tr><th>Company</th><th>Date</th><th>Role</th><th>Package</th><th>Eligible Branches</th><th>Action</th></tr></thead><tbody>
+          <tr><td><strong>TCS</strong></td><td>June 10, 2026</td><td>System Engineer</td><td>3.5 LPA</td><td>All Branches</td><td><button class="btn btn-secondary btn-sm">Register</button></td></tr>
+          <tr><td><strong>Infosys</strong></td><td>June 15, 2026</td><td>Specialist Programmer</td><td>4.5 LPA</td><td>CSE, IT, ECE</td><td><button class="btn btn-secondary btn-sm">Register</button></td></tr>
+          <tr><td><strong>Wipro</strong></td><td>June 20, 2026</td><td>Project Engineer</td><td>3.8 LPA</td><td>All Branches</td><td><button class="btn btn-secondary btn-sm">Register</button></td></tr>
+          <tr><td><strong>Cognizant</strong></td><td>July 5, 2026</td><td>Programmer Analyst</td><td>4.0 LPA</td><td>CSE, IT</td><td><button class="btn btn-secondary btn-sm">Register</button></td></tr>
+        </tbody></table></div>
+      </div>
+    </section>
+
+    <!-- VIDEO LECTURES -->
+    <section class="page-section" id="sec-videos">
+      <div class="section-header">
+        <div><div class="section-title">🎬 Video Lectures</div><div class="section-subtitle">Watch lecture &amp; tutorial videos from your teachers</div></div>
+      </div>
+      <!-- Filter Bar -->
+      <div class="video-filter-bar">
+        <div class="video-search">
+          <span>🔍</span>
+          <input type="text" placeholder="Search videos by title or tag..." id="video-search-input" oninput="filterVideos()">
+        </div>
+        <select class="video-filter-select" id="video-subject-filter" onchange="filterVideos()">
+          <option value="">All Subjects</option>
+        </select>
+        <select class="video-filter-select" id="video-teacher-filter" onchange="filterVideos()">
+          <option value="">All Teachers</option>
+        </select>
+      </div>
+      <!-- My Video Stats -->
+      <div class="stats-grid" id="student-video-stats" style="margin-bottom:24px">
+        <div class="stat-card"><div class="stat-icon blue">🎬</div><div><div class="stat-value" id="svstat-total">0</div><div class="stat-label">Total Videos</div></div></div>
+        <div class="stat-card"><div class="stat-icon green">✅</div><div><div class="stat-value" id="svstat-watched">0</div><div class="stat-label">Watched</div></div></div>
+        <div class="stat-card"><div class="stat-icon orange">👍</div><div><div class="stat-value" id="svstat-liked">0</div><div class="stat-label">Videos Liked</div></div></div>
+        <div class="stat-card"><div class="stat-icon red">👁</div><div><div class="stat-value" id="svstat-views">0</div><div class="stat-label">My Total Views</div></div></div>
+      </div>
+      <!-- Videos Grid -->
+      <div id="student-video-grid" class="video-grid"></div>
+    </section>
+
+  </div><!-- page-content -->
+
+  <!-- VIDEO PLAYER MODAL -->
+  <div class="modal-overlay hidden" id="video-modal-overlay" onclick="closeVideoModal(event)">
+    <div class="video-modal" id="video-modal-box">
+      <div class="modal-video-player" id="modal-player"></div>
+      <div class="modal-body">
+        <div class="modal-title" id="modal-title"></div>
+        <div class="modal-meta" id="modal-meta"></div>
+        <div class="modal-description" id="modal-desc"></div>
+        <div class="modal-actions" id="modal-actions">
+          <button class="like-btn" id="modal-like-btn" onclick="toggleVideoLike()">👍 <span id="modal-like-count">0</span> Like</button>
+          <button class="like-btn" id="modal-dislike-btn" onclick="toggleVideoDislike()">👎 <span id="modal-dislike-count">0</span> Dislike</button>
+          <button class="modal-close" onclick="closeVideoModal()">✕ Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- main -->
+</div><!-- dashboard -->
+
+<div class="toast-container" id="toast-container"></div>
+
+<script>
+initData();
+let currentUser = null;
+let attChartInst = null;
+
+function init() {
+  const session = getSession();
+  if (!session || session.role !== 'student') { window.location.href = 'index.html'; return; }
+  currentUser = session.user;
+  document.getElementById('sb-name').textContent = currentUser.name;
+  document.getElementById('sb-roll').textContent = currentUser.rollNo;
+  document.getElementById('sb-avatar').textContent = currentUser.photo;
+  document.getElementById('tb-avatar').textContent = currentUser.photo;
+  document.getElementById('tb-name').textContent = currentUser.name.split(' ')[0];
+  loadHome(); loadProfile(); loadAttendance(); loadMarks(); loadFees(); loadCalendar();
+}
+
+function showSection(id) {
+  document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('sec-' + id).classList.add('active');
+  document.getElementById('nav-' + id).classList.add('active');
+  const titles = { home:'Home', profile:'My Profile', attendance:'Attendance Records', marks:'Exam Records', fees:'Fees & Payments', calendar:'Calendar', placements:'Placements', videos:'Video Lectures' };
+  document.getElementById('topbar-title').textContent = titles[id] || id;
+  if (id === 'attendance' && !attChartInst) renderAttChart();
+  if (id === 'videos') loadVideos();
+}
+
+function loadHome() {
+  const u = currentUser;
+  document.getElementById('home-subtitle').textContent = u.dept + ' | Semester ' + u.sem;
+  const att = getAttendance()[u.id];
+  const fees = getFees()[u.id];
+  const pct = att ? ((att.present / att.totalSessions) * 100).toFixed(1) : 0;
+  document.getElementById('home-stats').innerHTML = `
+    <div class="stat-card"><div class="stat-icon red">📊</div><div><div class="stat-value">${pct}%</div><div class="stat-label">Attendance</div></div></div>
+    <div class="stat-card"><div class="stat-icon blue">📝</div><div><div class="stat-value">${(getMarks()[u.id]||[]).length}</div><div class="stat-label">Subjects</div></div></div>
+    <div class="stat-card"><div class="stat-icon green">💳</div><div><div class="stat-value">₹${fees?(fees.paid/1000).toFixed(0)+'K':0}</div><div class="stat-label">Fees Paid</div></div></div>
+    <div class="stat-card"><div class="stat-icon orange">⚠️</div><div><div class="stat-value">₹${fees?(fees.pending/1000).toFixed(0)+'K':0}</div><div class="stat-label">Fee Pending</div></div></div>`;
+  const feed = document.getElementById('feed-container');
+  feed.innerHTML = getAnnouncements().slice(0,3).map(a => `
+    <div class="feed-post">
+      <div class="post-header"><div class="post-avatar">${a.avatar}</div><div><div class="post-author">${a.author}</div><div class="post-time">${a.time}</div></div><span class="badge blue" style="margin-left:auto">${a.category}</span></div>
+      <div class="post-body">${a.content}</div>
+      <div class="post-actions">
+        <button class="post-action-btn">👍 ${a.likes}</button>
+        <button class="post-action-btn">💬 ${a.comments}</button>
+        <button class="post-action-btn">🔗 Share</button>
+      </div>
+    </div>`).join('');
+  if (att) {
+    document.getElementById('quick-att').innerHTML = att.subjects.slice(0,3).map(s => `
+      <div style="margin-bottom:14px">
+        <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px"><span>${s.name}</span><strong>${s.percentage}%</strong></div>
+        <div class="progress-bar"><div class="progress-fill ${s.percentage>=75?'high':s.percentage>=65?'med':'low'}" style="width:${s.percentage}%"></div></div>
+      </div>`).join('');
+  }
+  document.getElementById('upcoming-events').innerHTML = `
+    <div style="display:flex;gap:12px;align-items:center;padding:10px;background:#F8F9FA;border-radius:8px"><div style="font-size:22px">📋</div><div><div style="font-size:13px;font-weight:600">Internal Assessment III</div><div style="font-size:12px;color:#6B7280">May 20 - May 25, 2026</div></div></div>
+    <div style="display:flex;gap:12px;align-items:center;padding:10px;background:#F8F9FA;border-radius:8px"><div style="font-size:22px">🏆</div><div><div style="font-size:13px;font-weight:600">Sports Day 2026</div><div style="font-size:12px;color:#6B7280">May 28, 2026</div></div></div>
+    <div style="display:flex;gap:12px;align-items:center;padding:10px;background:#F8F9FA;border-radius:8px"><div style="font-size:22px">💼</div><div><div style="font-size:13px;font-weight:600">TCS Campus Drive</div><div style="font-size:12px;color:#6B7280">June 10, 2026</div></div></div>`;
+}
+
+function loadProfile() {
+  const u = currentUser;
+  document.getElementById('prof-pic').textContent = u.photo;
+  document.getElementById('prof-name').textContent = u.name;
+  document.getElementById('prof-dept').textContent = u.dept;
+  document.getElementById('prof-badges').innerHTML = `<span class="badge blue">Year ${u.year}</span> <span class="badge green">Sem ${u.sem}</span>`;
+  document.getElementById('profile-grid').innerHTML = [
+    ['Roll Number', u.rollNo], ['Email', u.email], ['Phone', u.phone],
+    ['Date of Birth', u.dob], ['Blood Group', u.blood], ['Department', u.dept],
+    ['Address', u.address], ['Academic Year', '2025-26']
+  ].map(([l,v]) => `<div class="profile-field"><label>${l}</label><p>${v}</p></div>`).join('');
+}
+
+function loadAttendance() {
+  const att = getAttendance()[currentUser.id];
+  if (!att) return;
+  const pct = ((att.present / att.totalSessions) * 100).toFixed(2);
+  document.getElementById('att-pct').textContent = pct + '%';
+  document.getElementById('att-total').textContent = att.totalSessions;
+  document.getElementById('att-present').textContent = att.present;
+  document.getElementById('att-absent').textContent = att.absent;
+  document.getElementById('att-term-badge').textContent = 'Semester ' + currentUser.sem;
+  document.getElementById('att-table').innerHTML = att.subjects.map(s => {
+    const cls = s.percentage >= 75 ? 'high' : s.percentage >= 65 ? 'med' : 'low';
+    const statusCls = s.percentage >= 75 ? 'green' : s.percentage >= 65 ? 'orange' : 'red';
+    return `<tr>
+      <td><strong>${s.name}</strong></td>
+      <td style="color:#1565C0;font-weight:700">${s.attended}</td>
+      <td>${s.scheduled}</td>
+      <td>
+        <span style="font-weight:700">${s.percentage}%</span>
+        <div class="progress-bar"><div class="progress-fill ${cls}" style="width:${Math.min(s.percentage,100)}%"></div></div>
+      </td>
+      <td><span class="badge ${statusCls}">${s.percentage>=75?'✅ Good':s.percentage>=65?'⚠️ Risk':'❌ Short'}</span></td>
+    </tr>`;
+  }).join('');
+}
+
+function renderAttChart() {
+  const att = getAttendance()[currentUser.id];
+  if (!att) return;
+  const ctx = document.getElementById('att-chart').getContext('2d');
+  attChartInst = new Chart(ctx, {
+    type: 'doughnut',
+    data: { datasets: [{ data: [att.present, att.absent], backgroundColor: ['#42A5F5','#EF5350'], borderWidth: 0, hoverOffset: 6 }] },
+    options: { cutout: '75%', plugins: { legend: { display: false }, tooltip: { enabled: true } }, animation: { animateRotate: true, duration: 800 } }
+  });
+}
+
+function loadMarks() {
+  const marks = getMarks()[currentUser.id] || [];
+  if (!marks.length) return;
+  const grades = marks.map(m => m.grade);
+  const gradeMap = { O:10, 'A+':9, A:8, 'B+':7, B:6, C:5, F:0 };
+  const gpa = (marks.reduce((s,m) => s + (gradeMap[m.grade]||0), 0) / marks.length).toFixed(2);
+  const pass = marks.filter(m => m.status === 'Pass').length;
+  document.getElementById('marks-stats').innerHTML = `
+    <div class="stat-card"><div class="stat-icon blue">📊</div><div><div class="stat-value">${gpa}</div><div class="stat-label">CGPA</div></div></div>
+    <div class="stat-card"><div class="stat-icon green">✅</div><div><div class="stat-value">${pass}/${marks.length}</div><div class="stat-label">Subjects Passed</div></div></div>
+    <div class="stat-card"><div class="stat-icon orange">🏆</div><div><div class="stat-value">${grades.includes('O')?'O':grades.includes('A+')?'A+':'A'}</div><div class="stat-label">Best Grade</div></div></div>
+    <div class="stat-card"><div class="stat-icon red">📝</div><div><div class="stat-value">${marks.length}</div><div class="stat-label">Subjects</div></div></div>`;
+  document.getElementById('marks-table').innerHTML = marks.map(m => {
+    const gc = m.grade==='O'?'grade-O':m.grade==='A+'?'grade-Ap':m.grade==='A'?'grade-A':m.grade==='B+'?'grade-Bp':m.grade==='B'?'grade-B':'grade-C';
+    return `<tr>
+      <td><strong>${m.subject}</strong></td>
+      <td>${m.internal1}</td><td>${m.internal2}</td><td>${m.internal3}</td>
+      <td>${m.assignment}</td><td>${m.semester}</td>
+      <td><span class="grade ${gc}">${m.grade}</span></td>
+      <td><span class="badge ${m.status==='Pass'?'green':'red'}">${m.status}</span></td>
+    </tr>`;
+  }).join('');
+}
+
+function loadFees() {
+  const fees = getFees()[currentUser.id];
+  if (!fees) return;
+  document.getElementById('fee-summary').innerHTML = `
+    <div class="fee-card total"><div class="amount">₹${fees.totalFee.toLocaleString()}</div><div class="label">Total Fee</div></div>
+    <div class="fee-card paid"><div class="amount">₹${fees.paid.toLocaleString()}</div><div class="label">Amount Paid</div></div>
+    <div class="fee-card pending"><div class="amount">₹${fees.pending.toLocaleString()}</div><div class="label">Amount Due</div></div>`;
+  document.getElementById('fees-table').innerHTML = fees.breakdown.map(f => `<tr>
+    <td><strong>${f.type}</strong></td>
+    <td>₹${f.amount.toLocaleString()}</td>
+    <td><span class="badge ${f.paid?'green':'red'}">${f.paid?'✅ Paid':'⏳ Pending'}</span></td>
+    <td>${f.date || '—'}</td>
+    <td>${f.receipt ? `<span style="color:#1565C0;font-weight:600">${f.receipt}</span>` : '—'}</td>
+  </tr>`).join('');
+}
+
+function loadCalendar() {
+  const grid = document.getElementById('calendar-widget');
+  const days = ['Su','Mo','Tu','We','Th','Fr','Sa'];
+  const events = [5,10,15,20,25,28];
+  let html = days.map(d => `<div class="cal-day-label">${d}</div>`).join('');
+  const firstDay = new Date(2026, 4, 1).getDay();
+  for (let i = 0; i < firstDay; i++) html += `<div class="cal-day other-month"></div>`;
+  for (let d = 1; d <= 31; d++) {
+    const isToday = d === 3;
+    const hasEv = events.includes(d);
+    html += `<div class="cal-day ${isToday?'today':hasEv?'has-event':''}">${d}</div>`;
+  }
+  grid.innerHTML = `<div class="calendar-grid">${html}</div>`;
+  document.getElementById('cal-events').innerHTML = `
+    <div style="display:flex;flex-direction:column;gap:10px">
+      ${[{d:'May 5','e':'🎓 Result Declaration'},{'d':'May 10','e':'⚽ Sports Day Registration'},{'d':'May 15','e':'💳 Fee Due Date'},{'d':'May 20','e':'📋 IA-III Begins'},{'d':'May 25','e':'🎉 College Day'},{'d':'May 28','e':'🏆 Sports Day'}].map(ev=>`
+        <div style="display:flex;gap:12px;align-items:center;padding:10px 12px;background:#F8F9FA;border-radius:8px">
+          <div style="background:#E3F2FD;color:#1565C0;font-size:11px;font-weight:700;padding:4px 8px;border-radius:6px;white-space:nowrap">${ev.d}</div>
+          <div style="font-size:13px">${ev.e}</div>
+        </div>`).join('')}
+    </div>`;
+}
+
+function showToast(msg, type='success') {
+  const c = document.getElementById('toast-container');
+  const t = document.createElement('div');
+  t.className = 'toast ' + (type==='error'?'error':type==='info'?'info':'');
+  t.innerHTML = (type==='success'?'✅':type==='error'?'❌':'ℹ️') + ' ' + msg;
+  c.appendChild(t);
+  setTimeout(() => t.remove(), 3500);
+}
+
+// ========================
+// VIDEO LECTURES
+// ========================
+let allVideos = [];
+let currentVideoId = null;
+
+function loadVideos() {
+  allVideos = getVideos();
+  const teachers = getTeachers();
+
+  // Populate filter dropdowns
+  const subjects = [...new Set(allVideos.map(v => v.subject))];
+  const subjectSel = document.getElementById('video-subject-filter');
+  subjectSel.innerHTML = '<option value="">All Subjects</option>' + subjects.map(s => `<option value="${s}">${s}</option>`).join('');
+
+  const teacherSel = document.getElementById('video-teacher-filter');
+  teacherSel.innerHTML = '<option value="">All Teachers</option>' + teachers.map(t => `<option value="${t.id}">${t.name}</option>`).join('');
+
+  updateStudentVideoStats();
+  renderStudentVideoGrid(allVideos);
+}
+
+function updateStudentVideoStats() {
+  const uid = currentUser.id;
+  const total = allVideos.length;
+  const watched = allVideos.filter(v => {
+    const vr = v.stats.viewers.find(r => r.studentId === uid);
+    return vr && vr.viewCount > 0;
+  }).length;
+  const liked = allVideos.filter(v => {
+    const vr = v.stats.viewers.find(r => r.studentId === uid);
+    return vr && vr.liked;
+  }).length;
+  const totalViews = allVideos.reduce((acc, v) => {
+    const vr = v.stats.viewers.find(r => r.studentId === uid);
+    return acc + (vr ? vr.viewCount : 0);
+  }, 0);
+  document.getElementById('svstat-total').textContent = total;
+  document.getElementById('svstat-watched').textContent = watched;
+  document.getElementById('svstat-liked').textContent = liked;
+  document.getElementById('svstat-views').textContent = totalViews;
+}
+
+function filterVideos() {
+  const query = document.getElementById('video-search-input').value.toLowerCase().trim();
+  const subject = document.getElementById('video-subject-filter').value;
+  const teacherId = document.getElementById('video-teacher-filter').value;
+  let filtered = allVideos.filter(v => {
+    const matchSubject = !subject || v.subject === subject;
+    const matchTeacher = !teacherId || v.teacherId === teacherId;
+    const matchQuery = !query || v.title.toLowerCase().includes(query) ||
+      (v.tags || []).some(t => t.toLowerCase().includes(query)) ||
+      v.subject.toLowerCase().includes(query);
+    return matchSubject && matchTeacher && matchQuery;
+  });
+  renderStudentVideoGrid(filtered);
+}
+
+function renderStudentVideoGrid(videos) {
+  const teachers = getTeachers();
+  const uid = currentUser.id;
+  const grid = document.getElementById('student-video-grid');
+  if (!videos.length) {
+    grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:60px 20px;color:#6B7280">
+      <div style="font-size:64px;margin-bottom:16px">🔍</div>
+      <div style="font-size:18px;font-weight:700;margin-bottom:8px">No videos found</div>
+      <div style="font-size:14px">Try adjusting your filters</div>
+    </div>`;
+    return;
+  }
+  grid.innerHTML = videos.map(v => {
+    const teacher = teachers.find(t => t.id === v.teacherId);
+    const viewerData = v.stats.viewers.find(vr => vr.studentId === uid);
+    const hasWatched = viewerData && viewerData.viewCount > 0;
+    const hasLiked = viewerData && viewerData.liked;
+    return `
+    <div class="video-card" onclick="openVideo('${v.id}')">
+      <div class="video-thumbnail">
+        <span>${v.thumbnail}</span>
+        <div class="play-overlay"><div class="play-btn">&#9654;</div></div>
+        <div class="video-duration">&#8987; ${v.duration}</div>
+        ${hasWatched ? '<div class="watched-badge">&#10003; Watched</div>' : ''}
+      </div>
+      <div class="video-info">
+        <div class="video-title">${v.title}</div>
+        <div class="video-meta">
+          <span>👨‍🏫 ${teacher ? teacher.name : 'Unknown'}</span>
+          <span>📚 ${v.subject}</span>
+          <span>📅 ${v.uploadDate}</span>
+        </div>
+        <div class="video-tags">${(v.tags||[]).map(t=>`<span class="video-tag">${t}</span>`).join('')}</div>
+        <div class="video-stats">
+          <div class="video-stat">👁 ${v.stats.totalViews} views</div>
+          <div class="video-stat" style="color:${hasLiked?'#2E7D32':'inherit'}">👍 ${v.stats.likes}</div>
+          ${viewerData && viewerData.viewCount > 0 ? `<div class="video-stat" style="color:#7C3AED">🔁 Watched ${viewerData.viewCount}x</div>` : ''}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function openVideo(videoId) {
+  const allVids = getVideos();
+  const video = allVids.find(v => v.id === videoId);
+  if (!video) return;
+  const teachers = getTeachers();
+  const teacher = teachers.find(t => t.id === video.teacherId);
+  const uid = currentUser.id;
+  currentVideoId = videoId;
+
+  // Track view count
+  let viewerIdx = video.stats.viewers.findIndex(vr => vr.studentId === uid);
+  if (viewerIdx === -1) {
+    video.stats.viewers.push({ studentId: uid, viewCount: 0, watchedPct: 0, lastWatched: null, liked: false });
+    viewerIdx = video.stats.viewers.length - 1;
+  }
+  video.stats.viewers[viewerIdx].viewCount += 1;
+  video.stats.viewers[viewerIdx].lastWatched = new Date().toISOString().split('T')[0];
+  video.stats.viewers[viewerIdx].watchedPct = Math.min(
+    video.stats.viewers[viewerIdx].watchedPct + Math.floor(Math.random() * 15 + 10), 100
+  );
+  video.stats.totalViews += 1;
+
+  // Add daily view
+  const today = new Date().toISOString().split('T')[0];
+  const dayIdx = video.stats.dailyViews.findIndex(d => d.date === today);
+  if (dayIdx === -1) video.stats.dailyViews.push({ date: today, views: 1 });
+  else video.stats.dailyViews[dayIdx].views += 1;
+
+  saveVideos(allVids);
+  allVideos = allVids;
+
+  // Build modal
+  document.getElementById('modal-player').innerHTML = `<iframe src="${video.embedUrl}?autoplay=1&rel=0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+  document.getElementById('modal-title').textContent = video.title;
+  document.getElementById('modal-meta').innerHTML = `
+    <span>👨‍🏫 ${teacher ? teacher.name : 'Unknown'}</span>
+    <span>📚 ${video.subject}</span>
+    <span>📅 ${video.uploadDate}</span>
+    <span>&#8987; ${video.duration}</span>
+    <span>👁 ${video.stats.totalViews} views</span>`;
+  document.getElementById('modal-desc').textContent = video.description || 'No description available.';
+
+  updateModalLikeUI(video, viewerIdx);
+  document.getElementById('video-modal-overlay').classList.remove('hidden');
+  document.body.style.overflow = 'hidden';
+
+  // Refresh the grid stats
+  updateStudentVideoStats();
+  filterVideos();
+}
+
+function updateModalLikeUI(video, viewerIdx) {
+  const vr = video.stats.viewers[viewerIdx];
+  const likeBtn = document.getElementById('modal-like-btn');
+  const dislikeBtn = document.getElementById('modal-dislike-btn');
+  document.getElementById('modal-like-count').textContent = video.stats.likes;
+  document.getElementById('modal-dislike-count').textContent = video.stats.dislikes;
+  likeBtn.className = 'like-btn' + (vr.liked ? ' liked' : '');
+  dislikeBtn.className = 'like-btn' + (vr.liked === false && vr.viewCount > 0 && !vr.liked ? '' : '');
+}
+
+function toggleVideoLike() {
+  const allVids = getVideos();
+  const video = allVids.find(v => v.id === currentVideoId);
+  if (!video) return;
+  const uid = currentUser.id;
+  const vr = video.stats.viewers.find(r => r.studentId === uid);
+  if (!vr) return;
+  if (vr.liked) {
+    vr.liked = false;
+    video.stats.likes = Math.max(0, video.stats.likes - 1);
+    document.getElementById('modal-like-btn').className = 'like-btn';
+  } else {
+    vr.liked = true;
+    video.stats.likes += 1;
+    document.getElementById('modal-like-btn').className = 'like-btn liked';
+    document.getElementById('modal-dislike-btn').className = 'like-btn';
+  }
+  document.getElementById('modal-like-count').textContent = video.stats.likes;
+  saveVideos(allVids);
+  allVideos = allVids;
+  updateStudentVideoStats();
+  showToast(vr.liked ? 'Video liked! 👍' : 'Like removed.', 'info');
+}
+
+function toggleVideoDislike() {
+  const allVids = getVideos();
+  const video = allVids.find(v => v.id === currentVideoId);
+  if (!video) return;
+  const uid = currentUser.id;
+  const vr = video.stats.viewers.find(r => r.studentId === uid);
+  if (!vr) return;
+  if (vr.liked) {
+    video.stats.likes = Math.max(0, video.stats.likes - 1);
+    vr.liked = false;
+  }
+  video.stats.dislikes = (video.stats.dislikes || 0) + 1;
+  document.getElementById('modal-dislike-btn').className = 'like-btn disliked';
+  document.getElementById('modal-like-btn').className = 'like-btn';
+  document.getElementById('modal-dislike-count').textContent = video.stats.dislikes;
+  document.getElementById('modal-like-count').textContent = video.stats.likes;
+  saveVideos(allVids);
+  allVideos = allVids;
+  showToast('Feedback recorded. 👎', 'info');
+}
+
+function closeVideoModal(e) {
+  if (e && e.target !== document.getElementById('video-modal-overlay')) return;
+  document.getElementById('video-modal-overlay').classList.add('hidden');
+  document.getElementById('modal-player').innerHTML = '';
+  document.body.style.overflow = '';
+  currentVideoId = null;
+}
+
+
+function logout() { clearSession(); window.location.href = 'index.html'; }
+window.onload = init;
+</script>
+</body>
+</html>

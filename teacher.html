@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AIT - Teacher Portal</title>
+<link rel="stylesheet" href="css/style.css">
+<script src="js/data.js"></script>
+</head>
+<body>
+<div class="dashboard">
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-logo">🎓</div>
+    <div><div class="sidebar-title">AIT</div><div class="sidebar-subtitle">Teacher Portal</div></div>
+  </div>
+  <div class="sidebar-user">
+    <div class="sidebar-avatar">👨‍🏫</div>
+    <div><div class="sidebar-user-name" id="sb-name">Teacher</div><div class="sidebar-user-role" id="sb-dept">Loading...</div></div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">Main</div>
+    <div class="nav-item active" onclick="showSection('dashboard')" id="nav-dashboard"><span class="nav-icon">🏠</span>Dashboard</div>
+    <div class="nav-section-label">Classroom</div>
+    <div class="nav-item" onclick="showSection('attendance')" id="nav-attendance"><span class="nav-icon">📊</span>Mark Attendance</div>
+    <div class="nav-item" onclick="showSection('marks')" id="nav-marks"><span class="nav-icon">📝</span>Enter Marks</div>
+    <div class="nav-item" onclick="showSection('students')" id="nav-students"><span class="nav-icon">👥</span>My Students</div>
+    <div class="nav-section-label">Content</div>
+    <div class="nav-item" onclick="showSection('videos')" id="nav-videos"><span class="nav-icon">🎬</span>Video Lectures</div>
+    <div class="nav-section-label">Reports</div>
+    <div class="nav-item" onclick="showSection('reports')" id="nav-reports"><span class="nav-icon">📈</span>Class Reports</div>
+  </nav>
+  <div class="sidebar-footer"><button class="btn-logout" onclick="logout()">🚪 Sign Out</button></div>
+</aside>
+
+<div class="main">
+  <header class="topbar">
+    <div class="topbar-title" id="topbar-title">Dashboard</div>
+    <div class="search-bar"><span class="icon">🔍</span><input type="text" placeholder="Search students..."></div>
+    <div class="topbar-actions">
+      <button class="topbar-btn">🔔</button>
+      <div class="topbar-profile">
+        <div class="topbar-avatar">👨‍🏫</div>
+        <span class="topbar-name" id="tb-name">Teacher</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="page-content">
+
+    <!-- DASHBOARD -->
+    <section class="page-section active" id="sec-dashboard">
+      <div class="section-header"><div><div class="section-title">Welcome, <span id="dash-name"></span>! 👋</div><div class="section-subtitle" id="dash-sub"></div></div></div>
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-icon blue">👥</div><div><div class="stat-value" id="stat-students">0</div><div class="stat-label">My Students</div></div></div>
+        <div class="stat-card"><div class="stat-icon red">📚</div><div><div class="stat-value" id="stat-classes">0</div><div class="stat-label">Classes Today</div></div></div>
+        <div class="stat-card"><div class="stat-icon green">✅</div><div><div class="stat-value" id="stat-att">--%</div><div class="stat-label">Avg Attendance</div></div></div>
+        <div class="stat-card"><div class="stat-icon orange">🎬</div><div><div class="stat-value" id="stat-videos">0</div><div class="stat-label">Videos Uploaded</div></div></div>
+      </div>
+      <div class="two-col">
+        <div class="card">
+          <div class="card-title" style="margin-bottom:16px">📅 My Classes</div>
+          <div id="my-classes"></div>
+        </div>
+        <div class="card">
+          <div class="card-title" style="margin-bottom:16px">📢 Notice Board</div>
+          <div style="display:flex;flex-direction:column;gap:12px">
+            <div style="padding:14px;background:#E3F2FD;border-radius:10px;border-left:4px solid #1565C0"><div style="font-size:13px;font-weight:700;color:#1565C0">📋 IA-III Schedule Released</div><div style="font-size:12px;color:#6B7280;margin-top:4px">Exams from May 20–25, 2026. Submit marks by June 1.</div></div>
+            <div style="padding:14px;background:#E8F5E9;border-radius:10px;border-left:4px solid #2E7D32"><div style="font-size:13px;font-weight:700;color:#2E7D32">✅ Attendance Audit</div><div style="font-size:12px;color:#6B7280;margin-top:4px">Monthly attendance audit due May 10. Please update records.</div></div>
+            <div style="padding:14px;background:#FFF3E0;border-radius:10px;border-left:4px solid #E65100"><div style="font-size:13px;font-weight:700;color:#E65100">⚠️ Low Attendance Alert</div><div style="font-size:12px;color:#6B7280;margin-top:4px">3 students in your class have attendance below 75%.</div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MARK ATTENDANCE -->
+    <section class="page-section" id="sec-attendance">
+      <div class="section-header"><div class="section-title">Mark Attendance</div></div>
+      <div class="card" style="margin-bottom:20px">
+        <div class="form-row">
+          <div><label class="form-label">Select Class</label><select class="form-control" id="att-class" onchange="loadStudentList()"><option value="">-- Select Class --</option></select></div>
+          <div><label class="form-label">Date</label><input type="date" class="form-control" id="att-date" value="2026-05-03"></div>
+        </div>
+        <div class="form-row">
+          <div><label class="form-label">Session</label><select class="form-control" id="att-session"><option>Period 1</option><option>Period 2</option><option>Period 3</option><option>Period 4</option></select></div>
+          <div style="display:flex;align-items:flex-end"><button class="btn btn-outline" onclick="markAll('P')">✅ Mark All Present</button>&nbsp;<button class="btn btn-outline" style="color:#C62828;border-color:#C62828" onclick="markAll('A')">❌ Mark All Absent</button></div>
+        </div>
+      </div>
+      <div class="card" id="att-student-card" style="display:none">
+        <div class="card-header"><div class="card-title">Student List</div><button class="btn btn-primary" onclick="saveAttendance()">💾 Save Attendance</button></div>
+        <div id="att-student-list"></div>
+      </div>
+    </section>
+
+    <!-- ENTER MARKS -->
+    <section class="page-section" id="sec-marks">
+      <div class="section-header"><div class="section-title">Enter Marks</div></div>
+      <div class="card" style="margin-bottom:20px">
+        <div class="form-row">
+          <div><label class="form-label">Select Class</label><select class="form-control" id="marks-class" onchange="loadMarksTable()"><option value="">-- Select Class --</option></select></div>
+          <div><label class="form-label">Exam Type</label><select class="form-control" id="marks-exam"><option>Internal Assessment I</option><option>Internal Assessment II</option><option>Internal Assessment III</option><option>Semester Exam</option></select></div>
+        </div>
+      </div>
+      <div class="card" id="marks-entry-card" style="display:none">
+        <div class="card-header"><div class="card-title">Marks Entry</div><button class="btn btn-primary" onclick="saveMarks()">💾 Save Marks</button></div>
+        <div class="table-wrap"><table><thead><tr><th>Roll No.</th><th>Student Name</th><th>Max Marks</th><th>Marks Obtained</th><th>Status</th></tr></thead><tbody id="marks-entry-table"></tbody></table></div>
+      </div>
+    </section>
+
+    <!-- MY STUDENTS -->
+    <section class="page-section" id="sec-students">
+      <div class="section-header"><div class="section-title">My Students</div></div>
+      <div class="card">
+        <div class="table-wrap"><table><thead><tr><th>Roll No.</th><th>Name</th><th>Department</th><th>Attendance</th><th>CGPA</th><th>Fee Status</th></tr></thead><tbody id="students-table"></tbody></table></div>
+      </div>
+    </section>
+
+    <!-- VIDEO LECTURES -->
+    <section class="page-section" id="sec-videos">
+      <div class="section-header">
+        <div><div class="section-title">🎬 Video Lectures</div><div class="section-subtitle" id="video-section-sub">Upload &amp; manage your lecture videos</div></div>
+        <button class="btn btn-primary" onclick="switchVideoTab('upload')">📤 Upload New Video</button>
+      </div>
+
+      <!-- VIDEO OVERVIEW STATS -->
+      <div class="stats-grid" id="video-overview-stats" style="margin-bottom:24px">
+        <div class="stat-card"><div class="stat-icon blue">🎬</div><div><div class="stat-value" id="vstat-total">0</div><div class="stat-label">Total Videos</div></div></div>
+        <div class="stat-card"><div class="stat-icon green">👁</div><div><div class="stat-value" id="vstat-views">0</div><div class="stat-label">Total Views</div></div></div>
+        <div class="stat-card"><div class="stat-icon orange">👍</div><div><div class="stat-value" id="vstat-likes">0</div><div class="stat-label">Total Likes</div></div></div>
+        <div class="stat-card"><div class="stat-icon red">⭐</div><div><div class="stat-value" id="vstat-rate">0%</div><div class="stat-label">Avg Like Rate</div></div></div>
+      </div>
+
+      <!-- TABS -->
+      <div class="video-tabs">
+        <div class="video-tab active" id="vtab-library" onclick="switchVideoTab('library')">📚 My Videos</div>
+        <div class="video-tab" id="vtab-upload" onclick="switchVideoTab('upload')">📤 Upload Video</div>
+      </div>
+
+      <!-- MY VIDEOS GRID -->
+      <div id="vpanel-library">
+        <div id="my-video-grid" class="video-grid"></div>
+      </div>
+
+      <!-- UPLOAD PANEL -->
+      <div id="vpanel-upload" style="display:none">
+        <div class="card">
+          <div class="card-title" style="margin-bottom:20px">📤 Upload New Lecture Video</div>
+          <div class="form-row">
+            <div><label class="form-label">Video Title *</label><input type="text" class="form-control" id="v-title" placeholder="e.g. Introduction to Networking"></div>
+            <div><label class="form-label">Subject *</label><input type="text" class="form-control" id="v-subject" placeholder="e.g. Computer Networks"></div>
+          </div>
+          <div class="form-row">
+            <div><label class="form-label">YouTube Video URL *</label><input type="text" class="form-control" id="v-url" placeholder="https://www.youtube.com/watch?v=..."></div>
+            <div><label class="form-label">Duration</label><input type="text" class="form-control" id="v-duration" placeholder="e.g. 45:30"></div>
+          </div>
+          <div style="margin-bottom:16px">
+            <label class="form-label">Description</label>
+            <textarea class="form-control" id="v-desc" rows="3" style="resize:vertical;width:100%" placeholder="Brief description of what this video covers..."></textarea>
+          </div>
+          <div class="form-row">
+            <div><label class="form-label">Tags (comma-separated)</label><input type="text" class="form-control" id="v-tags" placeholder="e.g. OSI Model, TCP/IP, Networking"></div>
+            <div><label class="form-label">Thumbnail Emoji</label><input type="text" class="form-control" id="v-thumb" placeholder="🎓" style="max-width:120px"></div>
+          </div>
+          <div style="display:flex;gap:12px;margin-top:8px">
+            <button class="btn btn-primary" onclick="uploadVideo()">📤 Upload Video</button>
+            <button class="btn btn-outline" onclick="switchVideoTab('library')">Cancel</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ANALYTICS PANEL -->
+      <div id="vpanel-analytics" style="display:none">
+        <div class="analytics-back" onclick="switchVideoTab('library')">&#8592; Back to My Videos</div>
+        <div class="analytics-video-header" id="analytics-header"></div>
+        <div class="analytics-stats" id="analytics-stats"></div>
+        <div class="two-col">
+          <div>
+            <div class="viewers-card">
+              <div class="card-header" style="margin-bottom:16px">
+                <div class="card-title">👥 Student Viewers List</div>
+                <span class="badge blue" id="analytics-viewer-count">0 viewers</span>
+              </div>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Student</th>
+                      <th>Roll No.</th>
+                      <th>Views</th>
+                      <th>Watch Progress</th>
+                      <th>Last Watched</th>
+                      <th>Liked?</th>
+                    </tr>
+                  </thead>
+                  <tbody id="analytics-viewers-table"></tbody>
+                </table>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-title" style="margin-bottom:16px">📈 Views Over Time</div>
+              <div class="engagement-chart" id="analytics-chart"></div>
+            </div>
+          </div>
+          <div>
+            <div class="card" style="margin-bottom:20px">
+              <div class="card-title" style="margin-bottom:12px">👍 Like / Dislike Ratio</div>
+              <div id="analytics-like-section"></div>
+            </div>
+            <div class="card">
+              <div class="card-title" style="margin-bottom:16px">🏆 Top Viewers</div>
+              <div class="top-viewers" id="analytics-top-viewers"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- REPORTS -->
+    <section class="page-section" id="sec-reports">
+      <div class="section-header"><div class="section-title">Class Reports</div></div>
+      <div class="card">
+        <div class="card-title" style="margin-bottom:16px">Attendance Summary</div>
+        <div id="report-att-summary"></div>
+      </div>
+    </section>
+
+  </div>
+</div>
+</div>
+
+<div class="toast-container" id="toast-container"></div>
+
+<script>
+initData();
+let currentUser = null;
+let myClasses = [];
+let attStatus = {};
+let myVideos = [];
+
+function init() {
+  const session = getSession();
+  if (!session || session.role !== 'teacher') { window.location.href = 'index.html'; return; }
+  currentUser = session.user;
+  document.getElementById('sb-name').textContent = currentUser.name;
+  document.getElementById('sb-dept').textContent = currentUser.dept;
+  document.getElementById('tb-name').textContent = currentUser.name.split(' ').pop();
+  document.getElementById('dash-name').textContent = currentUser.name.split(' ')[1] || currentUser.name;
+  document.getElementById('dash-sub').textContent = currentUser.dept + ' | ' + currentUser.subject;
+
+  const tc = getTeacherClasses();
+  myClasses = tc[currentUser.id] || [];
+  myVideos = getVideos().filter(v => v.teacherId === currentUser.id);
+
+  // Stats
+  const totalStudents = myClasses.reduce((s,c) => s + c.students.length, 0);
+  document.getElementById('stat-students').textContent = totalStudents;
+  document.getElementById('stat-classes').textContent = myClasses.length;
+  document.getElementById('stat-att').textContent = '76.5%';
+  document.getElementById('stat-videos').textContent = myVideos.length;
+
+  // My Classes card
+  document.getElementById('my-classes').innerHTML = myClasses.map(c => `
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:14px;border:1px solid #E5E7EB;border-radius:10px;margin-bottom:10px">
+      <div><div style="font-weight:700;font-size:14px">${c.className}</div><div style="font-size:12px;color:#6B7280">${c.subject} &bull; ${c.students.length} Students</div></div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-sm btn-secondary" onclick="showSection('attendance')">📊 Attendance</button>
+        <button class="btn btn-sm btn-primary" onclick="showSection('marks')">📝 Marks</button>
+      </div>
+    </div>`).join('') || '<p style="color:#6B7280;font-size:14px">No classes assigned.</p>';
+
+  // Populate class dropdowns
+  const opts = myClasses.map(c => `<option value="${c.classId}">${c.className} - ${c.subject}</option>`).join('');
+  document.getElementById('att-class').innerHTML += opts;
+  document.getElementById('marks-class').innerHTML += opts;
+
+  loadStudentsTable();
+  loadReports();
+  loadVideoSection();
+}
+
+function showSection(id) {
+  document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('sec-' + id).classList.add('active');
+  document.getElementById('nav-' + id).classList.add('active');
+  const titles = {
+    dashboard:'Dashboard', attendance:'Mark Attendance', marks:'Enter Marks',
+    students:'My Students', reports:'Class Reports', videos:'Video Lectures'
+  };
+  document.getElementById('topbar-title').textContent = titles[id] || id;
+}
+
+/* ---- ATTENDANCE ---- */
+function loadStudentList() {
+  const classId = document.getElementById('att-class').value;
+  if (!classId) { document.getElementById('att-student-card').style.display = 'none'; return; }
+  const cls = myClasses.find(c => c.classId === classId);
+  if (!cls) return;
+  const students = getStudents().filter(s => cls.students.includes(s.id));
+  attStatus = {};
+  students.forEach(s => attStatus[s.id] = 'P');
+  document.getElementById('att-student-card').style.display = 'block';
+  renderAttList(students);
+}
+
+function renderAttList(students) {
+  document.getElementById('att-student-list').innerHTML = students.map(s => `
+    <div class="student-att-row">
+      <div><div class="student-att-name">${s.name}</div><div class="student-att-id">${s.rollNo}</div></div>
+      <div class="att-toggle">
+        <button class="att-btn present ${attStatus[s.id]==='P'?'active':''}" onclick="setAtt('${s.id}','P',this)">✅ Present</button>
+        <button class="att-btn absent ${attStatus[s.id]==='A'?'active':''}" onclick="setAtt('${s.id}','A',this)">❌ Absent</button>
+      </div>
+    </div>`).join('');
+}
+
+function setAtt(id, status, btn) {
+  attStatus[id] = status;
+  const row = btn.closest('.student-att-row');
+  row.querySelectorAll('.att-btn').forEach(b => b.classList.remove('active'));
+  row.querySelectorAll('.att-btn.' + (status==='P'?'present':'absent')).forEach(b => b.classList.add('active'));
+}
+
+function markAll(status) {
+  const classId = document.getElementById('att-class').value;
+  if (!classId) return;
+  const cls = myClasses.find(c => c.classId === classId);
+  const students = getStudents().filter(s => cls.students.includes(s.id));
+  students.forEach(s => attStatus[s.id] = status);
+  renderAttList(students);
+}
+
+function saveAttendance() {
+  showToast('Attendance saved successfully for ' + Object.keys(attStatus).length + ' students!', 'success');
+}
+
+/* ---- MARKS ---- */
+function loadMarksTable() {
+  const classId = document.getElementById('marks-class').value;
+  if (!classId) { document.getElementById('marks-entry-card').style.display = 'none'; return; }
+  const cls = myClasses.find(c => c.classId === classId);
+  if (!cls) return;
+  const students = getStudents().filter(s => cls.students.includes(s.id));
+  document.getElementById('marks-entry-card').style.display = 'block';
+  document.getElementById('marks-entry-table').innerHTML = students.map(s => `
+    <tr>
+      <td>${s.rollNo}</td>
+      <td><strong>${s.name}</strong></td>
+      <td>50</td>
+      <td><input type="number" min="0" max="50" style="width:70px;padding:6px 10px;border:2px solid #E5E7EB;border-radius:6px;font-size:13px" placeholder="--" id="mark-${s.id}"></td>
+      <td id="status-${s.id}"><span class="badge blue">Enter marks</span></td>
+    </tr>`).join('');
+  document.querySelectorAll('[id^="mark-"]').forEach(inp => {
+    inp.addEventListener('input', function() {
+      const sid = this.id.replace('mark-','');
+      const v = parseInt(this.value);
+      const st = document.getElementById('status-' + sid);
+      if (isNaN(v)) st.innerHTML = '<span class="badge blue">Enter marks</span>';
+      else if (v >= 25) st.innerHTML = '<span class="badge green">&#10003; Pass</span>';
+      else st.innerHTML = '<span class="badge red">&#10007; Fail</span>';
+    });
+  });
+}
+
+function saveMarks() { showToast('Marks saved successfully!', 'success'); }
+
+/* ---- MY STUDENTS ---- */
+function loadStudentsTable() {
+  const students = getStudents();
+  const att = getAttendance();
+  const marks = getMarks();
+  const fees = getFees();
+  document.getElementById('students-table').innerHTML = students.map(s => {
+    const a = att[s.id];
+    const pct = a ? ((a.present/a.totalSessions)*100).toFixed(1) : 0;
+    const m = marks[s.id] || [];
+    const gpa = m.length ? (m.reduce((sum,x) => sum + ({O:10,'A+':9,A:8,'B+':7,B:6,C:5,F:0}[x.grade]||0),0)/m.length).toFixed(1) : '-';
+    const f = fees[s.id];
+    return `<tr>
+      <td>${s.rollNo}</td><td><strong>${s.name}</strong></td><td>${s.dept.split(' ').slice(0,3).join(' ')}</td>
+      <td><span class="${pct>=75?'badge green':pct>=65?'badge orange':'badge red'}">${pct}%</span></td>
+      <td><strong>${gpa}</strong></td>
+      <td><span class="${f&&f.pending===0?'badge green':'badge red'}">${f&&f.pending===0?'&#10003; Clear':'&#8987; Pending'}</span></td>
+    </tr>`;
+  }).join('');
+}
+
+/* ---- REPORTS ---- */
+function loadReports() {
+  const students = getStudents();
+  const att = getAttendance();
+  document.getElementById('report-att-summary').innerHTML = `<div class="table-wrap"><table><thead><tr><th>Student</th><th>Total</th><th>Present</th><th>Absent</th><th>%</th><th>Status</th></tr></thead><tbody>${students.map(s=>{const a=att[s.id];if(!a)return'';const p=((a.present/a.totalSessions)*100).toFixed(1);return`<tr><td><strong>${s.name}</strong></td><td>${a.totalSessions}</td><td style="color:#1565C0">${a.present}</td><td style="color:#C62828">${a.absent}</td><td>${p}%</td><td><span class="badge ${p>=75?'green':'red'}">${p>=75?'Good':'Short'}</span></td></tr>`;}).join('')}</tbody></table></div>`;
+}
+
+/* ---- VIDEO LECTURES ---- */
+function loadVideoSection() {
+  myVideos = getVideos().filter(v => v.teacherId === currentUser.id);
+  const totalViews = myVideos.reduce((s,v) => s + v.stats.totalViews, 0);
+  const totalLikes = myVideos.reduce((s,v) => s + v.stats.likes, 0);
+  const totalLD = myVideos.reduce((s,v) => s + v.stats.likes + v.stats.dislikes, 0);
+  const likeRate = totalLD > 0 ? Math.round((totalLikes / totalLD) * 100) : 0;
+  document.getElementById('vstat-total').textContent = myVideos.length;
+  document.getElementById('vstat-views').textContent = totalViews;
+  document.getElementById('vstat-likes').textContent = totalLikes;
+  document.getElementById('vstat-rate').textContent = likeRate + '%';
+  renderVideoGrid();
+}
+
+function renderVideoGrid() {
+  const grid = document.getElementById('my-video-grid');
+  if (!myVideos.length) {
+    grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:60px 20px;color:#6B7280">
+      <div style="font-size:64px;margin-bottom:16px">🎬</div>
+      <div style="font-size:18px;font-weight:700;margin-bottom:8px">No videos uploaded yet</div>
+      <div style="font-size:14px;margin-bottom:20px">Start by uploading your first lecture video</div>
+      <button class="btn btn-primary" onclick="switchVideoTab('upload')">📤 Upload Your First Video</button>
+    </div>`;
+    return;
+  }
+  grid.innerHTML = myVideos.map(v => {
+    const uniqueViewers = v.stats.viewers.filter(vr => vr.viewCount > 0).length;
+    const totalLD = v.stats.likes + v.stats.dislikes;
+    const likeRate = totalLD > 0 ? Math.round((v.stats.likes / totalLD) * 100) : 0;
+    return `
+    <div class="video-card">
+      <div class="video-thumbnail">
+        <span>${v.thumbnail}</span>
+        <div class="play-overlay"><div class="play-btn">&#9654;</div></div>
+        <div class="video-duration">&#8987; ${v.duration}</div>
+      </div>
+      <div class="video-info">
+        <div class="video-title">${v.title}</div>
+        <div class="video-meta">
+          <span>📚 ${v.subject}</span>
+          <span>📅 ${v.uploadDate}</span>
+        </div>
+        <div class="video-tags">${(v.tags||[]).map(t=>`<span class="video-tag">${t}</span>`).join('')}</div>
+        <div class="video-stats">
+          <div class="video-stat">👁 ${v.stats.totalViews}</div>
+          <div class="video-stat">👥 ${uniqueViewers} viewers</div>
+          <div class="video-stat">👍 ${likeRate}%</div>
+        </div>
+        <div class="video-actions">
+          <button class="btn btn-primary btn-sm" onclick="openAnalytics('${v.id}')">📊 Analytics</button>
+          <button class="btn btn-outline btn-sm" onclick="deleteVideo('${v.id}')">🗑 Delete</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function switchVideoTab(tab) {
+  document.getElementById('vpanel-library').style.display = 'none';
+  document.getElementById('vpanel-upload').style.display = 'none';
+  document.getElementById('vpanel-analytics').style.display = 'none';
+  document.getElementById('vtab-library').classList.remove('active');
+  document.getElementById('vtab-upload').classList.remove('active');
+  if (tab === 'library') {
+    document.getElementById('vpanel-library').style.display = 'block';
+    document.getElementById('vtab-library').classList.add('active');
+    document.getElementById('video-overview-stats').style.display = 'grid';
+  } else if (tab === 'upload') {
+    document.getElementById('vpanel-upload').style.display = 'block';
+    document.getElementById('vtab-upload').classList.add('active');
+    document.getElementById('video-overview-stats').style.display = 'none';
+  } else if (tab === 'analytics') {
+    document.getElementById('vpanel-analytics').style.display = 'block';
+    document.getElementById('video-overview-stats').style.display = 'none';
+  }
+}
+
+function uploadVideo() {
+  const title = document.getElementById('v-title').value.trim();
+  const subject = document.getElementById('v-subject').value.trim();
+  const url = document.getElementById('v-url').value.trim();
+  const duration = document.getElementById('v-duration').value.trim() || '00:00';
+  const desc = document.getElementById('v-desc').value.trim();
+  const tagsRaw = document.getElementById('v-tags').value.trim();
+  const thumb = document.getElementById('v-thumb').value.trim() || '🎬';
+  if (!title || !subject || !url) { showToast('Please fill in Title, Subject, and URL.', 'error'); return; }
+  let embedUrl = url;
+  const match = url.match(/(?:v=|youtu\.be\/)([^&\s]+)/);
+  if (match) embedUrl = 'https://www.youtube.com/embed/' + match[1];
+  const newVideo = {
+    id: 'V' + Date.now(),
+    teacherId: currentUser.id,
+    title, subject, description: desc,
+    thumbnail: thumb, embedUrl,
+    uploadDate: new Date().toISOString().split('T')[0],
+    duration, tags: tagsRaw ? tagsRaw.split(',').map(t=>t.trim()) : [],
+    stats: {
+      totalViews: 0, likes: 0, dislikes: 0,
+      viewers: getStudents().map(s => ({ studentId: s.id, viewCount: 0, watchedPct: 0, lastWatched: null, liked: false })),
+      dailyViews: []
+    }
+  };
+  const allVideos = getVideos();
+  allVideos.push(newVideo);
+  saveVideos(allVideos);
+  myVideos = allVideos.filter(v => v.teacherId === currentUser.id);
+  loadVideoSection();
+  ['v-title','v-subject','v-url','v-duration','v-desc','v-tags','v-thumb'].forEach(id => document.getElementById(id).value = '');
+  showToast('Video uploaded successfully!', 'success');
+  switchVideoTab('library');
+}
+
+function deleteVideo(videoId) {
+  if (!confirm('Are you sure you want to delete this video?')) return;
+  let allVideos = getVideos().filter(v => v.id !== videoId);
+  saveVideos(allVideos);
+  myVideos = allVideos.filter(v => v.teacherId === currentUser.id);
+  loadVideoSection();
+  showToast('Video deleted.', 'info');
+}
+
+function openAnalytics(videoId) {
+  const video = getVideos().find(v => v.id === videoId);
+  if (!video) return;
+  switchVideoTab('analytics');
+  const students = getStudents();
+  const s = video.stats;
+  const totalLD = s.likes + s.dislikes;
+  const likeRate = totalLD > 0 ? Math.round((s.likes / totalLD) * 100) : 0;
+  const uniqueViewers = s.viewers.filter(vr => vr.viewCount > 0).length;
+  const totalWatchTime = s.viewers.filter(vr=>vr.viewCount>0).reduce((acc,vr) => acc + vr.watchedPct, 0);
+  const avgWatchPct = uniqueViewers > 0 ? Math.round(totalWatchTime / uniqueViewers) : 0;
+
+  // Header
+  document.getElementById('analytics-header').innerHTML = `
+    <div class="analytics-thumb">${video.thumbnail}</div>
+    <div>
+      <div class="analytics-video-title">${video.title}</div>
+      <div class="analytics-video-meta">
+        <span>📚 ${video.subject}</span>
+        <span>📅 Uploaded: ${video.uploadDate}</span>
+        <span>&#8987; ${video.duration}</span>
+      </div>
+    </div>`;
+
+  // 4 Stat Cards
+  document.getElementById('analytics-stats').innerHTML = `
+    <div class="analytics-stat-card blue">
+      <div class="analytics-stat-num">${s.totalViews}</div>
+      <div class="analytics-stat-label">Total Views</div>
+    </div>
+    <div class="analytics-stat-card green">
+      <div class="analytics-stat-num">${uniqueViewers}</div>
+      <div class="analytics-stat-label">Unique Viewers</div>
+    </div>
+    <div class="analytics-stat-card orange">
+      <div class="analytics-stat-num">${likeRate}%</div>
+      <div class="analytics-stat-label">Like Rate</div>
+    </div>
+    <div class="analytics-stat-card">
+      <div class="analytics-stat-num">${avgWatchPct}%</div>
+      <div class="analytics-stat-label">Avg Watch Progress</div>
+    </div>`;
+
+  document.getElementById('analytics-viewer-count').textContent = uniqueViewers + ' viewer' + (uniqueViewers !== 1 ? 's' : '');
+
+  // Viewers table — all students
+  document.getElementById('analytics-viewers-table').innerHTML = s.viewers.map(vr => {
+    const stu = students.find(st => st.id === vr.studentId);
+    if (!stu) return '';
+    const hasWatched = vr.viewCount > 0;
+    return `<tr>
+      <td><strong>${stu.name}</strong></td>
+      <td>${stu.rollNo}</td>
+      <td><span class="badge ${hasWatched ? 'blue' : 'orange'}">${vr.viewCount} ${vr.viewCount === 1 ? 'view' : 'views'}</span></td>
+      <td>
+        <div style="font-size:12px;font-weight:600;color:${vr.watchedPct>=75?'#2E7D32':vr.watchedPct>=40?'#D97706':'#C62828'}">${vr.watchedPct}%</div>
+        <div class="viewer-row-watch"><div class="viewer-row-watch-fill" style="width:${vr.watchedPct}%"></div></div>
+      </td>
+      <td style="font-size:12px;color:#6B7280">${vr.lastWatched || '&#8212;'}</td>
+      <td>${vr.liked ? '<span class="badge green">👍 Liked</span>' : '<span class="badge orange">&#8212;</span>'}</td>
+    </tr>`;
+  }).join('');
+
+  // Like/Dislike bar
+  const likePct = totalLD > 0 ? Math.round((s.likes / totalLD) * 100) : 0;
+  const dislikePct = 100 - likePct;
+  document.getElementById('analytics-like-section').innerHTML = `
+    <div style="display:flex;justify-content:space-between;margin-bottom:10px">
+      <div style="font-size:24px;font-weight:800;color:#2E7D32">👍 ${s.likes}</div>
+      <div style="font-size:24px;font-weight:800;color:#C62828">👎 ${s.dislikes}</div>
+    </div>
+    <div class="like-bar-wrap">
+      <div class="like-bar">
+        <div class="like-bar-fill-like" style="width:${likePct}%"></div>
+        <div class="like-bar-fill-dislike" style="width:${dislikePct}%"></div>
+      </div>
+      <div class="like-bar-labels">
+        <span>👍 ${likePct}% Liked</span>
+        <span>👎 ${dislikePct}% Disliked</span>
+      </div>
+    </div>
+    <div style="margin-top:12px;padding:12px;background:#F8F9FA;border-radius:8px">
+      <div style="font-size:12px;color:#6B7280">Total Reactions: <strong>${totalLD}</strong></div>
+      <div style="font-size:12px;color:#6B7280;margin-top:4px">Engagement: <strong>${s.totalViews > 0 ? Math.round((totalLD/s.totalViews)*100) : 0}%</strong> of viewers reacted</div>
+    </div>`;
+
+  // Engagement chart
+  const dailyViews = s.dailyViews || [];
+  const maxViews = Math.max(...dailyViews.map(d => d.views), 1);
+  document.getElementById('analytics-chart').innerHTML = dailyViews.length
+    ? dailyViews.map(d => `
+      <div class="chart-bar-wrap">
+        <div class="chart-bar-val">${d.views}</div>
+        <div class="chart-bar" style="height:${Math.round((d.views/maxViews)*90)}px"></div>
+        <div class="chart-bar-label">${d.date.slice(5)}</div>
+      </div>`).join('')
+    : '<div style="color:#6B7280;font-size:13px;padding:20px">No view data yet</div>';
+
+  // Top viewers
+  const sortedViewers = [...s.viewers].filter(vr=>vr.viewCount>0).sort((a,b)=>b.viewCount-a.viewCount).slice(0,3);
+  const rankClasses = ['rank-1','rank-2','rank-3'];
+  const rankEmojis = ['🥇','🥈','🥉'];
+  document.getElementById('analytics-top-viewers').innerHTML = sortedViewers.length
+    ? sortedViewers.map((vr,i) => {
+        const stu = students.find(st => st.id === vr.studentId);
+        if (!stu) return '';
+        return `<div class="top-viewer-row">
+          <div class="top-viewer-rank ${rankClasses[i]}">${rankEmojis[i]}</div>
+          <div style="flex:1">
+            <div style="font-weight:700;font-size:14px">${stu.name}</div>
+            <div style="font-size:12px;color:#6B7280">${stu.rollNo}</div>
+          </div>
+          <div style="text-align:right;margin-right:12px">
+            <div style="font-weight:800;font-size:18px;color:#7C3AED">${vr.viewCount}</div>
+            <div style="font-size:11px;color:#6B7280">views</div>
+          </div>
+          <div style="text-align:right">
+            <div style="font-weight:600;font-size:13px">${vr.watchedPct}%</div>
+            <div style="font-size:11px;color:#6B7280">watched</div>
+          </div>
+        </div>`;
+      }).join('')
+    : '<div style="color:#6B7280;font-size:13px;padding:10px">No viewers yet.</div>';
+}
+
+/* ---- UTILS ---- */
+function showToast(msg, type='success') {
+  const c = document.getElementById('toast-container');
+  const t = document.createElement('div');
+  t.className = 'toast ' + (type==='error'?'error':type==='info'?'info':'');
+  t.innerHTML = (type==='success'?'&#10003;':type==='error'?'&#10007;':'&#x2139;') + ' ' + msg;
+  c.appendChild(t);
+  setTimeout(() => t.remove(), 3500);
+}
+
+function logout() { clearSession(); window.location.href = 'index.html'; }
+window.onload = init;
+</script>
+</body>
+</html>

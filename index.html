@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AIT - Apex Institute of Technology | Login</title>
+  <meta name="description" content="Apex EduPartner - Student, Teacher and Admin Login">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="js/data.js"></script>
+</head>
+
+<body>
+  <div class="login-page">
+    <!-- Left Panel -->
+    <div class="login-left">
+      <div class="logo">🎓</div>
+      <h1>Apex Institute of Technology</h1>
+      <p>Your complete campus portal — academics, attendance, fees, and more — all in one place.</p>
+      <div class="login-features">
+        <div class="login-feature"><span>📊</span><span>Track Attendance & Marks</span></div>
+        <div class="login-feature"><span>💳</span><span>Fee Payment & Records</span></div>
+        <div class="login-feature"><span>📢</span><span>Campus Announcements</span></div>
+        <div class="login-feature"><span>🏫</span><span>Teacher & Admin Tools</span></div>
+      </div>
+    </div>
+
+    <!-- Right Panel (Login Form) -->
+    <div class="login-right">
+      <h2>Welcome Back! 👋</h2>
+      <p class="subtitle">Sign in to access your campus portal</p>
+
+      <!-- Role Tabs -->
+      <div class="role-tabs">
+        <button class="role-tab active" onclick="setRole('student')" id="tab-student">🎒 Student</button>
+        <button class="role-tab" onclick="setRole('teacher')" id="tab-teacher">👨‍🏫 Teacher</button>
+        <button class="role-tab" onclick="setRole('admin')" id="tab-admin">⚙️ Admin</button>
+      </div>
+
+      <!-- Form -->
+      <form id="login-form" onsubmit="handleLogin(event)">
+        <div class="form-group">
+          <label for="email">Email Address</label>
+          <input type="email" id="email" placeholder="Enter your email" value="mutha@ait.edu" required>
+        </div>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" placeholder="Enter your password" value="student123" required>
+        </div>
+        <button type="submit" class="btn-login" id="login-btn">🔐 Sign In as Student</button>
+      </form>
+
+      <!-- Demo Credentials -->
+      <div class="demo-creds">
+        <h4>🔑 Demo Credentials</h4>
+        <div id="demo-info">
+          <div class="demo-cred"><span>Student Email:</span><strong>mutha@ait.edu</strong></div>
+          <div class="demo-cred"><span>Password:</span><strong>student123</strong></div>
+        </div>
+      </div>
+
+      <!-- Error Message -->
+      <div id="login-error"
+        style="display:none; margin-top:14px; padding:12px 16px; background:#FFEBEE; border-radius:8px; color:#C62828; font-size:13px; font-weight:600;">
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-container" id="toast-container"></div>
+
+  <script>
+    initData();
+    let currentRole = 'student';
+
+    const demoCreds = {
+      student: {
+        email: 'mutha@ait.edu', password: 'student123', hints: [
+          { label: 'Student Email', val: 'mutha@ait.edu' },
+          { label: 'Password', val: 'student123' }
+        ]
+      },
+      teacher: {
+        email: 'gopi@ait.edu', password: 'teacher123', hints: [
+          { label: 'Teacher Email', val: 'gopi@ait.edu' },
+          { label: 'Password', val: 'teacher123' }
+        ]
+      },
+      admin: {
+        email: 'admin@ait.edu', password: 'admin123', hints: [
+          { label: 'Admin Email', val: 'admin@ait.edu' },
+          { label: 'Password', val: 'admin123' }
+        ]
+      }
+    };
+
+    function setRole(role) {
+      currentRole = role;
+      document.querySelectorAll('.role-tab').forEach(t => t.classList.remove('active'));
+      document.getElementById('tab-' + role).classList.add('active');
+      const creds = demoCreds[role];
+      document.getElementById('email').value = creds.email;
+      document.getElementById('password').value = creds.password;
+      document.getElementById('login-btn').textContent = '🔐 Sign In as ' + role.charAt(0).toUpperCase() + role.slice(1);
+      const demoInfo = document.getElementById('demo-info');
+      demoInfo.innerHTML = creds.hints.map(h => `<div class="demo-cred"><span>${h.label}:</span><strong>${h.val}</strong></div>`).join('');
+      document.getElementById('login-error').style.display = 'none';
+    }
+
+    function handleLogin(e) {
+      e.preventDefault();
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      const user = authenticate(email, password, currentRole);
+      if (user) {
+        setSession(user, currentRole);
+        showToast('Login successful! Redirecting...', 'success');
+        setTimeout(() => {
+          if (currentRole === 'student') window.location.href = 'student.html';
+          else if (currentRole === 'teacher') window.location.href = 'teacher.html';
+          else window.location.href = 'admin.html';
+        }, 800);
+      } else {
+        const err = document.getElementById('login-error');
+        err.style.display = 'block';
+        err.textContent = '❌ Invalid credentials. Please check your email and password.';
+      }
+    }
+
+    function showToast(msg, type = 'success') {
+      const c = document.getElementById('toast-container');
+      const t = document.createElement('div');
+      t.className = 'toast ' + (type === 'error' ? 'error' : type === 'info' ? 'info' : '');
+      t.innerHTML = (type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️') + ' ' + msg;
+      c.appendChild(t);
+      setTimeout(() => t.remove(), 3000);
+    }
+  </script>
+</body>
+
+</html>
